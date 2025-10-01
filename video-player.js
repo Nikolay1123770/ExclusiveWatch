@@ -278,7 +278,7 @@ class VideoPlayer {
                     <div class="video-actions">
                         <button class="btn btn-primary" onclick="videoPlayer.playVideo()">
                             <i class="fas fa-play"></i>
-                            Воспроизвести
+                            Воспроизвести здесь
                         </button>
                         <button class="btn btn-secondary" onclick="videoPlayer.openInNewTab()">
                             <i class="fas fa-external-link-alt"></i>
@@ -292,7 +292,17 @@ class VideoPlayer {
     
     playVideo() {
         if (this.currentVideo && this.currentVideo.videoUrl) {
-            window.open(this.currentVideo.videoUrl, '_blank');
+            // Попробуем встроить видео прямо в плеер
+            if (this.isYouTubeUrl(this.currentVideo.videoUrl)) {
+                this.loadYouTubeVideo(this.currentVideo);
+            } else if (this.isVimeoUrl(this.currentVideo.videoUrl)) {
+                this.loadVimeoVideo(this.currentVideo);
+            } else if (this.isDirectVideoUrl(this.currentVideo.videoUrl)) {
+                this.loadDirectVideo(this.currentVideo);
+            } else {
+                // Если не можем встроить, открываем в новой вкладке
+                window.open(this.currentVideo.videoUrl, '_blank');
+            }
         }
     }
     

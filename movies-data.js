@@ -12,7 +12,7 @@ const moviesDatabase = [
         duration: '166 мин',
         country: 'США',
         director: 'Дени Вильнёв',
-        videoUrl: 'https://www.youtube.com/watch?v=example1'
+        videoUrl: 'https://www.youtube.com/watch?v=U2Qp5pL3ovA'
     },
     {
         id: 2,
@@ -25,7 +25,7 @@ const moviesDatabase = [
         duration: '180 мин',
         country: 'США',
         director: 'Кристофер Нолан',
-        videoUrl: 'https://www.youtube.com/watch?v=example2'
+        videoUrl: 'https://www.youtube.com/watch?v=bK6ldnjE3Y0'
     },
     {
         id: 3,
@@ -38,7 +38,7 @@ const moviesDatabase = [
         duration: '114 мин',
         country: 'США',
         director: 'Грета Гервиг',
-        videoUrl: 'https://www.youtube.com/watch?v=example3'
+        videoUrl: 'https://www.youtube.com/watch?v=pBk4NYhWNMM'
     },
     {
         id: 4,
@@ -51,7 +51,7 @@ const moviesDatabase = [
         duration: '150 мин',
         country: 'США',
         director: 'Джеймс Ганн',
-        videoUrl: 'https://www.youtube.com/watch?v=example4'
+        videoUrl: 'https://www.youtube.com/watch?v=5WfTEZJnv_8'
     },
     {
         id: 5,
@@ -64,7 +64,7 @@ const moviesDatabase = [
         duration: '140 мин',
         country: 'США',
         director: 'Хоаким Дос Сантос',
-        videoUrl: 'https://www.youtube.com/watch?v=example5'
+        videoUrl: 'https://www.youtube.com/watch?v=shW9i6k8cB0'
     },
     {
         id: 6,

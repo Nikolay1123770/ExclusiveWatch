@@ -999,7 +999,7 @@
                         </div>
                         <p class="video-description">${movie.description}</p>
                     </div>
-                    <button class="play-button" onclick="playMovie()">
+                    <button class="play-button" onclick="playMovie()" title="Воспроизвести здесь">
                         <i class="fas fa-play"></i>
                     </button>
                 `;
@@ -1100,7 +1100,8 @@
         function playMovie() {
             if (currentMovie) {
                 if (videoPlayer) {
-                    videoPlayer.togglePlay();
+                    // Попробуем встроить видео в плеер
+                    videoPlayer.playVideo();
                 } else {
                     // Fallback: open video URL in new tab
                     if (currentMovie.videoUrl) {

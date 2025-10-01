@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Комната просмотра - WatchTogether</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            color: #ffffff;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .room-container {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            height: 100vh;
+        }
+
+        /* Video Section */
+        .video-section {
+            display: flex;
+            flex-direction: column;
+            background: #000000;
+            position: relative;
+        }
+
+        .video-header {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .room-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .room-code {
+            background: rgba(255, 107, 107, 0.2);
+            border: 1px solid #ff6b6b;
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            font-weight: bold;
+            color: #ff6b6b;
+        }
+
+        .room-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .video-controls {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .control-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 8px;
+            padding: 0.5rem;
+            color: #ffffff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .video-player {
+            flex: 1;
+            position: relative;
+            background: #000000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .video-placeholder {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            text-align: center;
+            position: relative;
+        }
+
+        .video-placeholder img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.3;
+        }
+
+        .video-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 2;
+        }
+
+        .video-title {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: #ff6b6b;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+        }
+
+        .video-meta {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: #a0a0a0;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+        }
+
+        .video-rating {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .stars {
+            color: #fbbf24;
+        }
+
+        .video-genres {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+
+        .genre-tag {
+            background: rgba(255, 107, 107, 0.2);
+            border: 1px solid rgba(255, 107, 107, 0.3);
+            border-radius: 4px;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.8rem;
+            color: #ff6b6b;
+        }
+
+        .video-description {
+            max-width: 600px;
+            line-height: 1.5;
+            color: #a0a0a0;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+        }
+
+        .play-button {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 107, 107, 0.9);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 3;
+        }
+
+        .play-button:hover {
+            background: #ff6b6b;
+            transform: translate(-50%, -50%) scale(1.1);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: rgba(0, 0, 0, 0.8);
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-tabs {
+            display: flex;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .tab {
+            flex: 1;
+            padding: 1rem;
+            background: none;
+            border: none;
+            color: #a0a0a0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+
+        .tab.active {
+            color: #ff6b6b;
+            border-bottom-color: #ff6b6b;
+        }
+
+        .tab-content {
+            flex: 1;
+            display: none;
+            flex-direction: column;
+        }
+
+        .tab-content.active {
+            display: flex;
+        }
+
+        /* Chat */
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .message {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .message-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .message-content {
+            flex: 1;
+        }
+
+        .message-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .message-author {
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .message-time {
+            font-size: 0.8rem;
+            color: #a0a0a0;
+        }
+
+        .message-text {
+            color: #e0e0e0;
+            line-height: 1.4;
+        }
+
+        .chat-input {
+            padding: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .chat-input-container {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 0.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #ffffff;
+            font-size: 1rem;
+        }
+
+        .chat-input input::placeholder {
+            color: #a0a0a0;
+        }
+
+        .chat-input input:focus {
+            outline: none;
+            border-color: #ff6b6b;
+        }
+
+        .send-btn {
+            background: #ff6b6b;
+            border: none;
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .send-btn:hover {
+            background: #ee5a52;
+        }
+
+        /* Participants */
+        .participants-list {
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .participant {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .participant:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .participant-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+        }
+
+        .participant-info {
+            flex: 1;
+        }
+
+        .participant-name {
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .participant-status {
+            font-size: 0.8rem;
+            color: #a0a0a0;
+        }
+
+        .participant-controls {
+            display: flex;
+            gap: 0.25rem;
+        }
+
+        .participant-btn {
+            background: none;
+            border: none;
+            color: #a0a0a0;
+            cursor: pointer;
+            padding: 0.25rem;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .participant-btn:hover {
+            color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.1);
+        }
+
+        /* Playlist */
+        .playlist-items {
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            overflow-y: auto;
+        }
+
+        .playlist-item {
+            display: flex;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .playlist-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .playlist-item.active {
+            background: rgba(255, 107, 107, 0.2);
+            border: 1px solid #ff6b6b;
+        }
+
+        .playlist-thumbnail {
+            width: 60px;
+            height: 40px;
+            border-radius: 4px;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .playlist-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .playlist-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .playlist-title {
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 0.25rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .playlist-meta {
+            font-size: 0.8rem;
+            color: #a0a0a0;
+        }
+
+        .playlist-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .playlist-btn {
+            background: none;
+            border: none;
+            color: #a0a0a0;
+            cursor: pointer;
+            padding: 0.25rem;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .playlist-btn:hover {
+            color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.1);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .room-container {
+                grid-template-columns: 1fr 300px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .room-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: 1fr auto;
+            }
+
+            .sidebar {
+                height: 300px;
+                border-left: none;
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
+            }
+
+            .video-title {
+                font-size: 1.5rem;
+            }
+
+            .video-meta {
+                font-size: 1rem;
+            }
+        }
+
+        /* Loading animation */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-left: 4px solid #ff6b6b;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Video Player Styles */
+        .video-player-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            background: #000000;
+        }
+
+        .video-wrapper {
+            width: 100%;
+            height: calc(100% - 60px);
+            position: relative;
+        }
+
+        .video-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .video-info-display {
+            display: flex;
+            height: 100%;
+            background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+        }
+
+        .video-poster {
+            flex: 1;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .video-poster img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.3;
+        }
+
+        .play-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 107, 107, 0.9);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 2rem;
+            color: white;
+        }
+
+        .play-overlay:hover {
+            background: #ff6b6b;
+            transform: translate(-50%, -50%) scale(1.1);
+        }
+
+        .video-details {
+            flex: 1;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            color: #ffffff;
+        }
+
+        .video-details h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: #ff6b6b;
+        }
+
+        .video-meta {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: #a0a0a0;
+        }
+
+        .video-rating {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .video-rating .stars {
+            color: #fbbf24;
+        }
+
+        .video-genres {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .video-description {
+            line-height: 1.6;
+            margin-bottom: 2rem;
+            color: #b0b0b0;
+        }
+
+        .video-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .video-actions .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .video-actions .btn-primary {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+            color: white;
+        }
+
+        .video-actions .btn-secondary {
+            background: transparent;
+            color: #ffffff;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .video-controls {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 1rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .control-row {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .control-btn {
+            background: none;
+            border: none;
+            color: #ffffff;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .time-display {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            color: #ffffff;
+            font-size: 0.9rem;
+            min-width: 100px;
+        }
+
+        .progress-container {
+            flex: 1;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #ff6b6b;
+            border-radius: 3px;
+            transition: width 0.1s ease;
+        }
+
+        .progress-handle {
+            position: absolute;
+            top: 50%;
+            right: 0;
+            transform: translateY(-50%);
+            width: 12px;
+            height: 12px;
+            background: #ff6b6b;
+            border-radius: 50%;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .progress-container:hover .progress-handle {
+            opacity: 1;
+        }
+
+        .volume-control {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .volume-slider {
+            width: 60px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 12px;
+            height: 12px;
+            background: #ff6b6b;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .playback-rate select {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            color: #ffffff;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .playback-rate select option {
+            background: #1a1a2e;
+            color: #ffffff;
+        }
+
+        /* Notifications */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 1rem;
+            color: #ffffff;
+            z-index: 3000;
+            animation: slideInRight 0.3s ease;
+            max-width: 300px;
+        }
+
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(100%); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="room-container">
+        <!-- Video Section -->
+        <div class="video-section">
+            <div class="video-header">
+                <div class="room-info">
+                    <div class="room-code" id="roomCode">ABC123</div>
+                    <div class="room-title" id="roomTitle">Комната просмотра</div>
+                </div>
+                <div class="video-controls">
+                    <button class="control-btn" onclick="toggleFullscreen()" title="Полный экран">
+                        <i class="fas fa-expand"></i>
+                    </button>
+                    <button class="control-btn" onclick="shareRoom()" title="Поделиться">
+                        <i class="fas fa-share"></i>
+                    </button>
+                    <button class="control-btn" onclick="showSettings()" title="Настройки">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="video-player">
+                <div class="video-placeholder" id="videoPlaceholder">
+                    <div class="video-overlay">
+                        <h2 class="video-title" id="videoTitle">Выберите фильм для просмотра</h2>
+                        <p class="video-meta" id="videoMeta">Добавьте фильм из каталога или плейлиста</p>
+                        <div class="video-rating" id="videoRating" style="display: none;">
+                            <div class="stars" id="stars"></div>
+                            <span id="ratingValue"></span>
+                        </div>
+                        <div class="video-genres" id="videoGenres" style="display: none;"></div>
+                        <p class="video-description" id="videoDescription" style="display: none;"></p>
+                    </div>
+                    <button class="play-button" onclick="openCatalog()" style="display: none;" id="playButton">
+                        <i class="fas fa-play"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-tabs">
+                <button class="tab active" onclick="switchTab('chat')">
+                    <i class="fas fa-comments"></i>
+                    Чат
+                </button>
+                <button class="tab" onclick="switchTab('participants')">
+                    <i class="fas fa-users"></i>
+                    Участники
+                </button>
+                <button class="tab" onclick="switchTab('playlist')">
+                    <i class="fas fa-list"></i>
+                    Плейлист
+                </button>
+            </div>
+
+            <!-- Chat Tab -->
+            <div class="tab-content active" id="chatTab">
+                <div class="chat-messages" id="chatMessages">
+                    <div class="message">
+                        <div class="message-avatar">S</div>
+                        <div class="message-content">
+                            <div class="message-header">
+                                <span class="message-author">Система</span>
+                                <span class="message-time">сейчас</span>
+                            </div>
+                            <div class="message-text">Добро пожаловать в комнату! Начните с выбора фильма.</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="chat-input">
+                    <div class="chat-input-container">
+                        <input type="text" id="chatInput" placeholder="Напишите сообщение..." onkeypress="handleChatKeyPress(event)">
+                        <button class="send-btn" onclick="sendMessage()">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Participants Tab -->
+            <div class="tab-content" id="participantsTab">
+                <div class="participants-list" id="participantsList">
+                    <div class="participant">
+                        <div class="participant-avatar">В</div>
+                        <div class="participant-info">
+                            <div class="participant-name">Вы</div>
+                            <div class="participant-status">Владелец комнаты</div>
+                        </div>
+                        <div class="participant-controls">
+                            <button class="participant-btn" title="Настройки">
+                                <i class="fas fa-cog"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Playlist Tab -->
+            <div class="tab-content" id="playlistTab">
+                <div class="playlist-items" id="playlistItems">
+                    <div style="text-align: center; padding: 2rem; color: #a0a0a0;">
+                        <i class="fas fa-film" style="font-size: 2rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                        <p>Плейлист пуст</p>
+                        <p style="font-size: 0.9rem; margin-top: 0.5rem;">Добавьте фильмы из каталога</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="video-player.js"></script>
+    <script src="movies-data.js"></script>
+    <script>
+        // Global variables
+        let currentMovie = null;
+        let participants = [
+            { id: 1, name: 'Вы', avatar: 'В', isOwner: true, status: 'Владелец комнаты' }
+        ];
+        let messages = [
+            { id: 1, author: 'Система', avatar: 'S', text: 'Добро пожаловать в комнату! Начните с выбора фильма.', time: new Date() }
+        ];
+
+        // Initialize room
+        function initializeRoom() {
+            generateRoomCode();
+            initializeVideoPlayer();
+            loadSelectedMovie();
+            renderParticipants();
+            renderMessages();
+        }
+        
+        // Initialize video player
+        function initializeVideoPlayer() {
+            videoPlayer = new VideoPlayer('videoContainer');
+            
+            // Add event listeners for synchronization
+            videoPlayer.addEventListener('videoLoaded', (movie) => {
+                addMessage('Система', `Загружен фильм: "${movie.title}"`);
+            });
+        }
+
+        // Generate room code
+        function generateRoomCode() {
+            const code = Math.random().toString(36).substring(2, 8).toUpperCase();
+            document.getElementById('roomCode').textContent = code;
+        }
+
+        // Load selected movie from catalog
+        function loadSelectedMovie() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const movieId = urlParams.get('movie');
+            
+            if (movieId) {
+                const selectedMovie = localStorage.getItem('selectedMovie');
+                if (selectedMovie) {
+                    try {
+                        const movie = JSON.parse(selectedMovie);
+                        displayMovie(movie);
+                        addToPlaylist(movie);
+                    } catch (error) {
+                        console.error('Error loading movie:', error);
+                    }
+                }
+            }
+        }
+
+        // Display movie
+        function displayMovie(movie) {
+            currentMovie = movie;
+            
+            // Load video in player
+            if (videoPlayer) {
+                videoPlayer.loadVideo(movie);
+            }
+            
+            // Update room title
+            document.getElementById('roomTitle').textContent = movie.title || 'Комната просмотра';
+            
+            // Add system message
+            addMessage('Система', `Загружен фильм: "${movie.title}"`);
+        }
+
+        // Generate stars for rating
+        function generateStars(rating) {
+            const fullStars = Math.floor(rating / 2);
+            const hasHalfStar = rating % 2 >= 1;
+            const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+            
+            let stars = '';
+            
+            for (let i = 0; i < fullStars; i++) {
+                stars += '<i class="fas fa-star"></i>';
+            }
+            
+            if (hasHalfStar) {
+                stars += '<i class="fas fa-star-half-alt"></i>';
+            }
+            
+            for (let i = 0; i < emptyStars; i++) {
+                stars += '<i class="far fa-star"></i>';
+            }
+            
+            return stars;
+        }
+
+        // Add movie to playlist
+        function addToPlaylist(movie) {
+            const playlistItems = document.getElementById('playlistItems');
+            
+            // Check if movie is already in playlist
+            const existingItem = playlistItems.querySelector(`[data-movie-id="${movie.id}"]`);
+            if (existingItem) return;
+            
+            // Clear empty state
+            if (playlistItems.querySelector('.empty-state')) {
+                playlistItems.innerHTML = '';
+            }
+            
+            const playlistItem = document.createElement('div');
+            playlistItem.className = 'playlist-item active';
+            playlistItem.setAttribute('data-movie-id', movie.id);
+            playlistItem.innerHTML = `
+                <div class="playlist-thumbnail">
+                    <img src="${movie.poster || 'https://via.placeholder.com/60x40/1a1a1a/ffffff?text=No+Image'}" 
+                         alt="${movie.title}" 
+                         onerror="this.src='https://via.placeholder.com/60x40/1a1a1a/ffffff?text=No+Image'">
+                </div>
+                <div class="playlist-info">
+                    <div class="playlist-title">${movie.title}</div>
+                    <div class="playlist-meta">${movie.year} • ${movie.rating} ⭐</div>
+                </div>
+                <div class="playlist-actions">
+                    <button class="playlist-btn" onclick="removeFromPlaylist(${movie.id})" title="Удалить">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            `;
+            
+            playlistItems.appendChild(playlistItem);
+        }
+
+        // Remove from playlist
+        function removeFromPlaylist(movieId) {
+            const item = document.querySelector(`[data-movie-id="${movieId}"]`);
+            if (item) {
+                item.remove();
+                
+                // Show empty state if no items
+                const playlistItems = document.getElementById('playlistItems');
+                if (playlistItems.children.length === 0) {
+                    playlistItems.innerHTML = `
+                        <div style="text-align: center; padding: 2rem; color: #a0a0a0;" class="empty-state">
+                            <i class="fas fa-film" style="font-size: 2rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                            <p>Плейлист пуст</p>
+                            <p style="font-size: 0.9rem; margin-top: 0.5rem;">Добавьте фильмы из каталога</p>
+                        </div>
+                    `;
+                }
+            }
+        }
+
+        // Play movie
+        function playMovie() {
+            if (currentMovie && videoPlayer) {
+                videoPlayer.togglePlay();
+                addMessage('Система', `Начинаем просмотр: "${currentMovie.title}"`);
+                showNotification('Воспроизведение начато!', 'success');
+            }
+        }
+
+        // Open catalog
+        function openCatalog() {
+            window.open('catalog.html', '_blank');
+        }
+
+        // Tab switching
+        function switchTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(tabName + 'Tab').classList.add('active');
+        }
+
+        // Chat functions
+        function handleChatKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            
+            if (message) {
+                addMessage('Вы', message);
+                input.value = '';
+            }
+        }
+
+        function addMessage(author, text) {
+            const message = {
+                id: Date.now(),
+                author: author,
+                avatar: author === 'Вы' ? 'В' : author.charAt(0),
+                text: text,
+                time: new Date()
+            };
+            
+            messages.push(message);
+            renderMessages();
+        }
+
+        function renderMessages() {
+            const container = document.getElementById('chatMessages');
+            container.innerHTML = messages.map(message => `
+                <div class="message">
+                    <div class="message-avatar">${message.avatar}</div>
+                    <div class="message-content">
+                        <div class="message-header">
+                            <span class="message-author">${message.author}</span>
+                            <span class="message-time">${formatTime(message.time)}</span>
+                        </div>
+                        <div class="message-text">${message.text}</div>
+                    </div>
+                </div>
+            `).join('');
+            
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function formatTime(date) {
+            return date.toLocaleTimeString('ru-RU', { 
+                hour: '2-digit', 
+                minute: '2-digit' 
+            });
+        }
+
+        // Participants functions
+        function renderParticipants() {
+            const container = document.getElementById('participantsList');
+            container.innerHTML = participants.map(participant => `
+                <div class="participant">
+                    <div class="participant-avatar">${participant.avatar}</div>
+                    <div class="participant-info">
+                        <div class="participant-name">${participant.name}</div>
+                        <div class="participant-status">${participant.status}</div>
+                    </div>
+                    <div class="participant-controls">
+                        <button class="participant-btn" title="Настройки">
+                            <i class="fas fa-cog"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Control functions
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        function shareRoom() {
+            const roomCode = document.getElementById('roomCode').textContent;
+            const url = window.location.href;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Присоединяйтесь к просмотру!',
+                    text: `Код комнаты: ${roomCode}`,
+                    url: url
+                });
+            } else {
+                navigator.clipboard.writeText(`${url}\nКод комнаты: ${roomCode}`);
+                showNotification('Ссылка скопирована в буфер обмена!', 'success');
+            }
+        }
+
+        function showSettings() {
+            showNotification('Настройки будут добавлены в следующей версии', 'info');
+        }
+
+        // Notification system
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            
+            const colors = {
+                info: '#3b82f6',
+                success: '#10b981',
+                error: '#ef4444',
+                warning: '#f59e0b'
+            };
+            
+            const icons = {
+                info: 'fas fa-info-circle',
+                success: 'fas fa-check-circle',
+                error: 'fas fa-exclamation-circle',
+                warning: 'fas fa-exclamation-triangle'
+            };
+            
+            notification.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="${icons[type] || icons.info}" style="color: ${colors[type] || colors.info};"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 4000);
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeRoom();
+        });
+    </script>
+</body>
+</html>

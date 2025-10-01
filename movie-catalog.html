@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Каталог фильмов - WatchTogether</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            color: #ffffff;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 1rem 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: #ffffff;
+            text-decoration: none;
+            transition: color 0.3s ease;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover {
+            color: #ff6b6b;
+        }
+
+        .back-btn {
+            background: transparent;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: #ffffff;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #ff6b6b;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-top: 80px;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .page-subtitle {
+            font-size: 1.2rem;
+            color: #b0b0b0;
+            margin-bottom: 2rem;
+        }
+
+        /* Search and Filters */
+        .search-section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .search-container {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #ffffff;
+            font-size: 1rem;
+        }
+
+        .search-input::placeholder {
+            color: #a0a0a0;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #ff6b6b;
+        }
+
+        .search-btn {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+            border: none;
+            border-radius: 8px;
+            padding: 1rem 2rem;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .search-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
+        }
+
+        .filters {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .filter-label {
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .filter-select {
+            padding: 0.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #ffffff;
+            font-size: 1rem;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: #ff6b6b;
+        }
+
+        .filter-select option {
+            background: #1a1a2e;
+            color: #ffffff;
+        }
+
+        /* Movies Grid */
+        .movies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .movie-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .movie-card:hover {
+            transform: translateY(-10px);
+            border-color: #ff6b6b;
+            box-shadow: 0 20px 40px rgba(255, 107, 107, 0.2);
+        }
+
+        .movie-poster {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .movie-card:hover .movie-poster {
+            transform: scale(1.05);
+        }
+
+        .movie-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.8) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .movie-card:hover .movie-overlay {
+            opacity: 1;
+        }
+
+        .play-button {
+            background: rgba(255, 107, 107, 0.9);
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .play-button:hover {
+            background: #ff6b6b;
+            transform: scale(1.1);
+        }
+
+        .movie-info {
+            padding: 1.5rem;
+        }
+
+        .movie-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: #ffffff;
+            line-height: 1.3;
+        }
+
+        .movie-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .movie-year {
+            color: #ff6b6b;
+            font-weight: 600;
+        }
+
+        .movie-rating {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #fbbf24;
+        }
+
+        .movie-genres {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .genre-tag {
+            background: rgba(255, 107, 107, 0.2);
+            border: 1px solid rgba(255, 107, 107, 0.3);
+            border-radius: 4px;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.8rem;
+            color: #ff6b6b;
+        }
+
+        .movie-description {
+            color: #b0b0b0;
+            line-height: 1.5;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .movie-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .watch-btn {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+            color: white;
+        }
+
+        .watch-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
+        }
+
+        .add-btn {
+            background: transparent;
+            color: #ffffff;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .add-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #ff6b6b;
+        }
+
+        /* Loading */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 400px;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-left: 4px solid #ff6b6b;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+        }
+
+        .page-btn {
+            padding: 0.75rem 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #ffffff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .page-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #ff6b6b;
+        }
+
+        .page-btn.active {
+            background: #ff6b6b;
+            border-color: #ff6b6b;
+        }
+
+        .page-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .nav-links {
+                gap: 1rem;
+            }
+
+            .search-container {
+                flex-direction: column;
+            }
+
+            .filters {
+                grid-template-columns: 1fr;
+            }
+
+            .movies-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 1rem;
+            }
+
+            .movie-actions {
+                flex-direction: column;
+            }
+        }
+
+        /* Notifications */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 1rem;
+            color: #ffffff;
+            z-index: 3000;
+            animation: slideInRight 0.3s ease;
+            max-width: 300px;
+        }
+
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(100%); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav">
+            <div class="logo">WatchTogether</div>
+            <ul class="nav-links">
+                <li><a href="main.html">Главная</a></li>
+                <li><a href="room.html">Комната</a></li>
+                <li><a href="movie-catalog.html" class="active">Каталог</a></li>
+            </ul>
+            <a href="main.html" class="back-btn">
+                <i class="fas fa-arrow-left"></i>
+                Назад
+            </a>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <div class="page-header">
+                <h1 class="page-title">Каталог фильмов</h1>
+                <p class="page-subtitle">Найдите идеальный фильм для совместного просмотра</p>
+            </div>
+
+            <!-- Search and Filters -->
+            <div class="search-section">
+                <div class="search-container">
+                    <input type="text" class="search-input" id="searchInput" placeholder="Поиск фильмов...">
+                    <button class="search-btn" onclick="searchMovies()">
+                        <i class="fas fa-search"></i>
+                        Поиск
+                    </button>
+                </div>
+                
+                <div class="filters">
+                    <div class="filter-group">
+                        <label class="filter-label">Жанр</label>
+                        <select class="filter-select" id="genreFilter">
+                            <option value="">Все жанры</option>
+                            <option value="драма">Драма</option>
+                            <option value="комедия">Комедия</option>
+                            <option value="боевик">Боевик</option>
+                            <option value="фантастика">Фантастика</option>
+                            <option value="ужасы">Ужасы</option>
+                            <option value="триллер">Триллер</option>
+                            <option value="мелодрама">Мелодрама</option>
+                            <option value="приключения">Приключения</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label class="filter-label">Год</label>
+                        <select class="filter-select" id="yearFilter">
+                            <option value="">Все годы</option>
+                            <option value="2024">2024</option>
+                            <option value="2023">2023</option>
+                            <option value="2022">2022</option>
+                            <option value="2021">2021</option>
+                            <option value="2020">2020</option>
+                            <option value="2019">2019</option>
+                            <option value="2018">2018</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label class="filter-label">Рейтинг</label>
+                        <select class="filter-select" id="ratingFilter">
+                            <option value="">Любой рейтинг</option>
+                            <option value="8">8+ звезд</option>
+                            <option value="7">7+ звезд</option>
+                            <option value="6">6+ звезд</option>
+                            <option value="5">5+ звезд</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Movies Grid -->
+            <div class="movies-grid" id="moviesGrid">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Загрузка фильмов...</p>
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination" id="pagination" style="display: none;">
+                <button class="page-btn" onclick="previousPage()" id="prevBtn">
+                    <i class="fas fa-chevron-left"></i>
+                    Назад
+                </button>
+                <div id="pageNumbers"></div>
+                <button class="page-btn" onclick="nextPage()" id="nextBtn">
+                    Вперед
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <script src="movies-data.js"></script>
+    <script>
+        // Global variables
+        let movies = [];
+        let filteredMovies = [];
+        let currentPage = 1;
+        const moviesPerPage = 12;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadMovies();
+            setupEventListeners();
+        });
+
+        // Setup event listeners
+        function setupEventListeners() {
+            document.getElementById('searchInput').addEventListener('input', debounce(searchMovies, 300));
+            document.getElementById('genreFilter').addEventListener('change', applyFilters);
+            document.getElementById('yearFilter').addEventListener('change', applyFilters);
+            document.getElementById('ratingFilter').addEventListener('change', applyFilters);
+        }
+
+        // Debounce function
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        // Load movies
+        async function loadMovies() {
+            try {
+                showLoading();
+                
+                // Simulate API call
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                // Load movies from external database
+                movies = moviesDatabase || [
+                    {
+                        id: 1,
+                        title: 'Дюна: Часть вторая',
+                        year: 2024,
+                        rating: 8.2,
+                        genres: ['фантастика', 'приключения', 'драма'],
+                        description: 'Продолжение эпической саги о пустынной планете Арракис и молодом герое Полу Атрейдесе.',
+                        poster: 'https://kinopoiskapiunofficial.tech/images/posters/kp/1318972.jpg',
+                        duration: '166 мин',
+                        country: 'США',
+                        director: 'Дени Вильнёв',
+                        videoUrl: 'https://www.youtube.com/watch?v=example1'
+                    },
+                    {
+                        id: 2,
+                        title: 'Оппенгеймер',
+                        year: 2023,
+                        rating: 8.5,
+                        genres: ['драма', 'биография', 'история'],
+                        description: 'История создания атомной бомбы глазами физика Роберта Оппенгеймера.',
+                        poster: 'https://kinopoiskapiunofficial.tech/images/posters/kp/1399419.jpg',
+                        duration: '180 мин',
+                        country: 'США',
+                        director: 'Кристофер Нолан'
+                    },
+                    {
+                        id: 3,
+                        title: 'Барби',
+                        year: 2023,
+                        rating: 7.8,
+                        genres: ['комедия', 'фантастика', 'приключения'],
+                        description: 'Барби и Кен отправляются в реальный мир, чтобы найти свое место в жизни.',
+                        poster: 'https://kinopoiskapiunofficial.tech/images/posters/kp/1395802.jpg',
+                        duration: '114 мин',
+                        country: 'США',
+                        director: 'Грета Гервиг'
+                    },
+                    {
+                        id: 4,
+                        title: 'Стражи Галактики. Часть 3',
+                        year: 2023,
+                        rating: 8.1,
+                        genres: ['фантастика', 'боевик', 'комедия'],
+                        description: 'Последнее приключение команды Стражи Галактики во главе со Старлордом.',
+                        poster: 'https://kinopoiskapiunofficial.tech/images/posters/kp/1395802.jpg',
+                        duration: '150 мин',
+                        country: 'США',
+                        director: 'Джеймс Ганн'
+                    },
+                    {
+                        id: 5,
+                        title: 'Человек-паук: Паутина вселенных',
+                        year: 2023,
+                        rating: 8.7,
+                        genres: ['фантастика', 'боевик', 'мультфильм'],
+                        description: 'Майлз Моралес путешествует по мультивселенной, встречая разных пауков.',
+                        poster: 'https://kinopoiskapiunofficial.tech/images/posters/kp/1395803.jpg',
+                        duration: '140 мин',
+                        country: 'США',
+                        director: 'Хоаким Дос Сантос'
+                    },
+                    {
+                        id: 6,
+                        title: 'Джон Уик 4',
+                        year: 2023,
+                        rating: 7.9,
+                        genres: ['боевик', 'триллер', 'криминал'],
+                        description: 'Джон Уик сражается с Высшим советом, чтобы обрести свободу.',
+                        poster: 'https://kinopoiskapiunofficial.tech/images/posters/kp/1395804.jpg',
+                        duration: '169 мин',
+                        country: 'США',
+                        director: 'Чад Стахелски'
+                    },
+                    {
+                        id: 7,
+                        title: 'Аватар: Путь воды',
+                        year: 2022,
+                        rating: 7.8,
+                        genres: ['фантастика', 'приключения', 'драма'],
+                        description: 'Джейк Салли и его семья исследуют океаны Пандоры.',
+                        poster: 'https://kinopoiskapiunofficial.tech/images/posters/kp/1395805.jpg',
+                        duration: '192 мин',
+                        country: 'США',
+                        director: 'Джеймс Кэмерон'
+                    },
+                    {
+                        id: 8,
+                        title: 'Топ Ган: Мэверик',
+                        year: 2022,
+                        rating: 8.3,
+                        genres: ['боевик', 'драма'],
+                        description: 'Пит Митчелл возвращается в школу летчиков-истребителей.',
+                        poster: 'https://kinopoiskapiunofficial.tech/images/posters/kp/1395806.jpg',
+                        duration: '131 мин',
+                        country: 'США',
+                        director: 'Джозеф Косински'
+                    },
+                    {
+                        id: 9,
+                        title: 'Черная пантера: Ваканда навсегда',
+                        year: 2022,
+                        rating: 7.6,
+                        genres: ['фантастика', 'боевик', 'драма'],
+                        description: 'Ваканда сталкивается с новыми угрозами после смерти короля Т\'Чаллы.',
+                        poster: 'https://kinopoiskapiunofficial.tech/images/posters/kp/1395807.jpg',
+                        duration: '161 мин',
+                        country: 'США',
+                        director: 'Райан Куглер'
+                    },
+                    {
+                        id: 10,
+                        title: 'Доктор Стрэндж: В мультивселенной безумия',
+                        year: 2022,
+                        rating: 7.4,
+                        genres: ['фантастика', 'боевик', 'ужасы'],
+                        description: 'Доктор Стрэндж исследует мультивселенную и сталкивается с Вандой.',
+                        poster: 'https://kinopoiskapiunofficial.tech/images/posters/kp/1395808.jpg',
+                        duration: '126 мин',
+                        country: 'США',
+                        director: 'Сэм Рэйми'
+                    },
+                    {
+                        id: 11,
+                        title: 'Бэтмен',
+                        year: 2022,
+                        rating: 7.8,
+                        genres: ['боевик', 'криминал', 'драма'],
+                        description: 'Брюс Уэйн расследует серию убийств в Готэме.',
+                        poster: 'https://kinopoiskapiunofficial.tech/images/posters/kp/1395809.jpg',
+                        duration: '176 мин',
+                        country: 'США',
+                        director: 'Мэтт Ривз'
+                    },
+                    {
+                        id: 12,
+                        title: 'Тор: Любовь и гром',
+                        year: 2022,
+                        rating: 6.9,
+                        genres: ['фантастика', 'боевик', 'комедия'],
+                        description: 'Тор отправляется в путешествие, чтобы найти себя.',
+                        poster: 'https://kinopoiskapiunofficial.tech/images/posters/kp/1395810.jpg',
+                        duration: '119 мин',
+                        country: 'США',
+                        director: 'Тайка Вайтити'
+                    }
+                ];
+                
+                filteredMovies = [...movies];
+                renderMovies();
+                renderPagination();
+                
+            } catch (error) {
+                console.error('Error loading movies:', error);
+                showError('Ошибка загрузки фильмов');
+            }
+        }
+
+        // Show loading
+        function showLoading() {
+            document.getElementById('moviesGrid').innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Загрузка фильмов...</p>
+                </div>
+            `;
+        }
+
+        // Show error
+        function showError(message) {
+            document.getElementById('moviesGrid').innerHTML = `
+                <div class="loading">
+                    <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: #ef4444; margin-bottom: 1rem;"></i>
+                    <p>${message}</p>
+                </div>
+            `;
+        }
+
+        // Search movies
+        function searchMovies() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            applyFilters();
+        }
+
+        // Apply filters
+        function applyFilters() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const genre = document.getElementById('genreFilter').value;
+            const year = document.getElementById('yearFilter').value;
+            const rating = document.getElementById('ratingFilter').value;
+
+            filteredMovies = movies.filter(movie => {
+                const matchesSearch = movie.title.toLowerCase().includes(searchTerm) ||
+                                    movie.description.toLowerCase().includes(searchTerm);
+                const matchesGenre = !genre || movie.genres.includes(genre);
+                const matchesYear = !year || movie.year.toString() === year;
+                const matchesRating = !rating || movie.rating >= parseFloat(rating);
+
+                return matchesSearch && matchesGenre && matchesYear && matchesRating;
+            });
+
+            currentPage = 1;
+            renderMovies();
+            renderPagination();
+        }
+
+        // Render movies
+        function renderMovies() {
+            const startIndex = (currentPage - 1) * moviesPerPage;
+            const endIndex = startIndex + moviesPerPage;
+            const moviesToShow = filteredMovies.slice(startIndex, endIndex);
+
+            if (moviesToShow.length === 0) {
+                document.getElementById('moviesGrid').innerHTML = `
+                    <div class="loading">
+                        <i class="fas fa-search" style="font-size: 3rem; color: #a0a0a0; margin-bottom: 1rem;"></i>
+                        <p>Фильмы не найдены</p>
+                        <p style="font-size: 0.9rem; margin-top: 0.5rem; color: #a0a0a0;">Попробуйте изменить параметры поиска</p>
+                    </div>
+                `;
+                return;
+            }
+
+            document.getElementById('moviesGrid').innerHTML = moviesToShow.map(movie => `
+                <div class="movie-card" onclick="selectMovie(${movie.id})">
+                    <img src="${movie.poster}" alt="${movie.title}" class="movie-poster" 
+                         onerror="this.src='https://via.placeholder.com/280x400/1a1a1a/ffffff?text=No+Image'">
+                    <div class="movie-overlay">
+                        <button class="play-button" onclick="event.stopPropagation(); watchMovie(${movie.id})">
+                            <i class="fas fa-play"></i>
+                        </button>
+                    </div>
+                    <div class="movie-info">
+                        <h3 class="movie-title">${movie.title}</h3>
+                        <div class="movie-meta">
+                            <span class="movie-year">${movie.year}</span>
+                            <div class="movie-rating">
+                                <i class="fas fa-star"></i>
+                                <span>${movie.rating}</span>
+                            </div>
+                        </div>
+                        <div class="movie-genres">
+                            ${movie.genres.map(genre => `<span class="genre-tag">${genre}</span>`).join('')}
+                        </div>
+                        <p class="movie-description">${movie.description}</p>
+                        <div class="movie-actions">
+                            <button class="action-btn watch-btn" onclick="event.stopPropagation(); watchMovie(${movie.id})">
+                                <i class="fas fa-play"></i>
+                                Смотреть
+                            </button>
+                            <button class="action-btn add-btn" onclick="event.stopPropagation(); addToPlaylist(${movie.id})">
+                                <i class="fas fa-plus"></i>
+                                В плейлист
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Render pagination
+        function renderPagination() {
+            const totalPages = Math.ceil(filteredMovies.length / moviesPerPage);
+            
+            if (totalPages <= 1) {
+                document.getElementById('pagination').style.display = 'none';
+                return;
+            }
+
+            document.getElementById('pagination').style.display = 'flex';
+            
+            const pageNumbers = document.getElementById('pageNumbers');
+            pageNumbers.innerHTML = '';
+
+            for (let i = 1; i <= totalPages; i++) {
+                const pageBtn = document.createElement('button');
+                pageBtn.className = `page-btn ${i === currentPage ? 'active' : ''}`;
+                pageBtn.textContent = i;
+                pageBtn.onclick = () => goToPage(i);
+                pageNumbers.appendChild(pageBtn);
+            }
+
+            document.getElementById('prevBtn').disabled = currentPage === 1;
+            document.getElementById('nextBtn').disabled = currentPage === totalPages;
+        }
+
+        // Go to page
+        function goToPage(page) {
+            currentPage = page;
+            renderMovies();
+            renderPagination();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Previous page
+        function previousPage() {
+            if (currentPage > 1) {
+                goToPage(currentPage - 1);
+            }
+        }
+
+        // Next page
+        function nextPage() {
+            const totalPages = Math.ceil(filteredMovies.length / moviesPerPage);
+            if (currentPage < totalPages) {
+                goToPage(currentPage + 1);
+            }
+        }
+
+        // Select movie
+        function selectMovie(movieId) {
+            const movie = movies.find(m => m.id === movieId);
+            if (movie) {
+                // Add visual feedback
+                showNotification(`Выбран фильм: "${movie.title}"`, 'info');
+            }
+        }
+
+        // Watch movie
+        function watchMovie(movieId) {
+            const movie = movies.find(m => m.id === movieId);
+            if (movie) {
+                // Save movie to localStorage
+                localStorage.setItem('selectedMovie', JSON.stringify(movie));
+                
+                // Redirect to room
+                window.location.href = `room.html?movie=${movieId}`;
+            }
+        }
+
+        // Add to playlist
+        function addToPlaylist(movieId) {
+            const movie = movies.find(m => m.id === movieId);
+            if (movie) {
+                // Get existing playlist
+                let playlist = JSON.parse(localStorage.getItem('moviePlaylist') || '[]');
+                
+                // Check if movie is already in playlist
+                if (!playlist.find(m => m.id === movie.id)) {
+                    playlist.push(movie);
+                    localStorage.setItem('moviePlaylist', JSON.stringify(playlist));
+                    showNotification(`"${movie.title}" добавлен в плейлист`, 'success');
+                } else {
+                    showNotification(`"${movie.title}" уже в плейлисте`, 'info');
+                }
+            }
+        }
+
+        // Show notification
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            
+            const colors = {
+                info: '#3b82f6',
+                success: '#10b981',
+                error: '#ef4444',
+                warning: '#f59e0b'
+            };
+            
+            const icons = {
+                info: 'fas fa-info-circle',
+                success: 'fas fa-check-circle',
+                error: 'fas fa-exclamation-circle',
+                warning: 'fas fa-exclamation-triangle'
+            };
+            
+            notification.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="${icons[type] || icons.info}" style="color: ${colors[type] || colors.info};"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 4000);
+        }
+    </script>
+</body>
+</html>

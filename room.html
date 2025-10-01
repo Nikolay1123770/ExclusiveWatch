@@ -940,6 +940,12 @@
         
         // Initialize video player
         function initializeVideoPlayer() {
+            // Create video container if it doesn't exist
+            const videoPlaceholder = document.getElementById('videoPlaceholder');
+            if (videoPlaceholder && !document.getElementById('videoContainer')) {
+                videoPlaceholder.innerHTML = '<div id="videoContainer" class="video-container"></div>';
+            }
+            
             videoPlayer = new VideoPlayer('videoContainer');
             
             // Add event listeners for synchronization
@@ -976,6 +982,28 @@
         // Display movie
         function displayMovie(movie) {
             currentMovie = movie;
+            
+            // Update video placeholder content
+            const videoPlaceholder = document.getElementById('videoPlaceholder');
+            if (videoPlaceholder) {
+                videoPlaceholder.innerHTML = `
+                    <div class="video-overlay">
+                        <h2 class="video-title">${movie.title}</h2>
+                        <p class="video-meta">${movie.year} • ${movie.duration} • ${movie.director}</p>
+                        <div class="video-rating">
+                            <div class="stars">${generateStars(movie.rating)}</div>
+                            <span>${movie.rating}</span>
+                        </div>
+                        <div class="video-genres">
+                            ${movie.genres.map(genre => `<span class="genre-tag">${genre}</span>`).join('')}
+                        </div>
+                        <p class="video-description">${movie.description}</p>
+                    </div>
+                    <button class="play-button" onclick="playMovie()">
+                        <i class="fas fa-play"></i>
+                    </button>
+                `;
+            }
             
             // Load video in player
             if (videoPlayer) {
@@ -1070,8 +1098,15 @@
 
         // Play movie
         function playMovie() {
-            if (currentMovie && videoPlayer) {
-                videoPlayer.togglePlay();
+            if (currentMovie) {
+                if (videoPlayer) {
+                    videoPlayer.togglePlay();
+                } else {
+                    // Fallback: open video URL in new tab
+                    if (currentMovie.videoUrl) {
+                        window.open(currentMovie.videoUrl, '_blank');
+                    }
+                }
                 addMessage('Система', `Начинаем просмотр: "${currentMovie.title}"`);
                 showNotification('Воспроизведение начато!', 'success');
             }
@@ -1079,7 +1114,7 @@
 
         // Open catalog
         function openCatalog() {
-            window.open('catalog.html', '_blank');
+            window.open('movie-catalog.html', '_blank');
         }
 
         // Tab switching
